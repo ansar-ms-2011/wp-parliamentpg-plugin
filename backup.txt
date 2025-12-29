@@ -1,0 +1,3 @@
+//    "postbuild:staging": "node postbuild.js",
+//    "postbuild:preprod": "node postbuild.js",
+    "postbuild:prod": "node postbuild.js",
