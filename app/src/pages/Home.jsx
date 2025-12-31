@@ -1,6 +1,6 @@
-// app/src/pages/Home.jsx
 import React, {useState, useEffect} from 'react';
 import {parseISO, format} from 'date-fns';
+import CustomPagination from "../components/CustomPagination";
 import {Table, Button, Form, Modal, Navbar, Badge, Card, Row, Col} from 'react-bootstrap';
 import {Alarm, ArrowRight, Eye} from 'react-bootstrap-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -9,42 +9,71 @@ const Home = () => {
     const [remoteData, setRemoteData] = useState(null);
     const [currentBill, setCurrentBill] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [meta, setMeta] = useState(null);
 
     // Get the localized data from PHP
     const settings = window.myPluginData || {};
 
     useEffect(() => {
-
         setLoading(true);
+        fetchBills(1);
+        fetchFiltersData();
+    }, [settings.root, settings.nonce]);
 
-        // Notice we are calling OUR site's custom endpoint
-        fetch(`${settings.root}parliament-pg/v1/external-data`, {
+    const fetchFiltersData = () => {
+        fetch(`${settings.root}parliament-pg/v1/get-filters-data?type=LEGISLATIVE_BILL`, {
             headers: {
                 'X-WP-Nonce': settings.nonce
             }
         })
             .then(response => response.json())
             .then(data => {
-                setRemoteData(data);
                 console.log(data);
                 setLoading(false);
             })
-            .catch(err => console.error("Fetch error:", err));
-    }, [settings.root, settings.nonce]);
+            .catch(err => {
+                console.error("Fetch error:", err)
+            });
+    }
+
+    const fetchBills = (page) => {
+        // Notice we are calling OUR site's custom endpoint
+        fetch(`${settings.root}parliament-pg/v1/get-bills?page=${page}`, {
+            headers: {
+                'X-WP-Nonce': settings.nonce
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setRemoteData(data?.data);
+                setMeta(data);
+
+                console.log(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Fetch error:", err)
+            });
+    }
+    const handlePageChange = (pageNumber) => {
+        console.log(pageNumber);
+        fetchBills(pageNumber);
+    }
 
     if (loading) return <p>{settings?.strings?.loading}</p>;
+
 
     return (
         <div className="w-100">
             <Card>
-                <Card.Header>
-                    <Card.Title className="mb-0">Filter</Card.Title>
+                <Card.Header className="px-2 py-1">
+                    <Card.Title className="mb-0 fs-4 fw-bold">Filter</Card.Title>
                 </Card.Header>
                 <Card.Body>
                     <Form>
                         <Row className="align-items-end">
                             <Col md={3}>
-                                <Form.Group className="mb-3" controlId="formGroupYear">
+                                <Form.Group className="mb-3">
                                     <Form.Label htmlFor="year">Year</Form.Label>
                                     <Form.Select aria-label="Select Year" id="year">
                                         <option>Select Year</option>
@@ -55,7 +84,7 @@ const Home = () => {
                                 </Form.Group>
                             </Col>
                             <Col md={3}>
-                                <Form.Group className="mb-3" controlId="formGroupStatus">
+                                <Form.Group className="mb-3">
                                     <Form.Label htmlFor="status">Status</Form.Label>
                                     <Form.Select aria-label="Select Status" id="status">
                                         <option>Select Status</option>
@@ -66,7 +95,7 @@ const Home = () => {
                                 </Form.Group>
                             </Col>
                             <Col md={3}>
-                                <Form.Group className="mb-3" controlId="formGroupCategory">
+                                <Form.Group className="mb-3">
                                     <Form.Label htmlFor="category">Category</Form.Label>
                                     <Form.Select aria-label="Select Category" id="category">
                                         <option>Select Category</option>
@@ -77,7 +106,7 @@ const Home = () => {
                                 </Form.Group>
                             </Col>
                             <Col md={3}>
-                                <Form.Group className="mb-3" controlId="formGroupProposer">
+                                <Form.Group className="mb-3">
                                     <Form.Label htmlFor="proposer">Proposer</Form.Label>
                                     <Form.Select aria-label="Select Proposer" id="proposer">
                                         <option>Select Proposer</option>
@@ -88,7 +117,7 @@ const Home = () => {
                                 </Form.Group>
                             </Col>
                             <Col md={3}>
-                                <Form.Group className="mb-3" controlId="formGroupSortBy">
+                                <Form.Group className="mb-3">
                                     <Form.Label htmlFor="sortBy">Sort By</Form.Label>
                                     <Form.Select aria-label="Select Sort Order" id="sortBy">
                                         <option>Select Sort Order</option>
@@ -100,7 +129,7 @@ const Home = () => {
                             </Col>
                             <Col className="d-flex justify-content-end align-items-center gap-3">
                                 <Button variant="secondary" type="reset">Reset</Button>
-                                <Button variant="primary" type="submit">Filter</Button>
+                                <Button variant="primary" className="btn-custom" type="submit">Filter</Button>
                             </Col>
                         </Row>
                     </Form>
@@ -108,10 +137,10 @@ const Home = () => {
             </Card>
 
             <Card className="mt-3">
-                <Card.Header>
-                    <Card.Title className="mb-0">Legislative Bills</Card.Title>
+                <Card.Header className="px-2 py-1">
+                    <Card.Title className="mb-0 fs-4 fw-bold">Legislative Bills</Card.Title>
                 </Card.Header>
-                <Card.Body className="p-0">
+                <Card.Body className="p-0" style={{overflow: 'auto'}}>
                     <Table striped bordered hover size="sm">
                         <thead>
                         <tr>
@@ -138,7 +167,8 @@ const Home = () => {
                                     <Badge bg="secondary">{item.category?.name}</Badge>
                                 </td>
                                 <td className="text-center">
-                                    <Button variant="primary" href={item.url} size="sm" onClick={() => setCurrentBill(item)}>
+                                    <Button className="btn-custom" href={item.url} size="sm"
+                                            onClick={() => setCurrentBill(item)}>
                                         <Eye color="white" size={16}/>
                                     </Button>
                                 </td>
@@ -147,23 +177,29 @@ const Home = () => {
                         </tbody>
                     </Table>
                 </Card.Body>
+                <Card.Footer className="d-flex justify-content-center align-items-center">
+                    <CustomPagination meta={meta} onPageChange={handlePageChange}></CustomPagination>
+                </Card.Footer>
             </Card>
 
             {currentBill && (
                 <Card className="mt-3">
-                    <Card.Header>
-                        <Card.Title className="mb-0">{currentBill?.title}</Card.Title>
+                    <Card.Header className="px-2 py-1">
+                        <Card.Title className="mb-0">
+                            <h2 className=" fs-4 fw-bold mb-0">{currentBill?.title}</h2>
+                        </Card.Title>
                         <Card.Text>
                             <div className="d-flex align-items-start gap-3">
                                 <span className="text-muted text-sm-start">{currentBill.bill_number}</span>
-                                <span className="text-muted text-sm-start">Proposer By : {currentBill.proposer?.first_name } on {format(parseISO(currentBill.bill_date), 'do MMMM, yyyy')}</span>
+                                <span
+                                    className="text-muted text-sm-start">Proposer By : {currentBill.proposer?.first_name} on {format(parseISO(currentBill.bill_date), 'do MMMM, yyyy')}</span>
                             </div>
                         </Card.Text>
                     </Card.Header>
                     <Card.Body>
                         <Row>
                             <Col md={12}>
-                                <p>{currentBill.summary}</p>
+                                <div dangerouslySetInnerHTML={{ __html: currentBill.summary }}></div>
                             </Col>
                         </Row>
                         <Row className="mt-1">
@@ -177,7 +213,8 @@ const Home = () => {
                                 Year : {format(parseISO(currentBill.bill_date), 'yyyy')}
                             </Col>
                             <Col md={3} className="d-flex justify-content-end align-items-center gap-3">
-                                <Button size="sm" variant="primary" href={currentBill.url} target="_blank">Read Full <ArrowRight/></Button>
+                                <Button size="sm" className="btn-custom" href={currentBill.url} target="_blank">Read
+                                    Full <ArrowRight/></Button>
                             </Col>
                         </Row>
                     </Card.Body>
