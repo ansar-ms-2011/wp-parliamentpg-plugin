@@ -4,12 +4,62 @@ import CustomPagination from "../components/CustomPagination";
 import {Table, Button, Form, Modal, Navbar, Badge, Card, Row, Col} from 'react-bootstrap';
 import {Alarm, ArrowRight, Eye} from 'react-bootstrap-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {ElementorButton} from "../components/ElementorButton";
+import {Filter} from "../components/Filter";
 
 const Home = () => {
     const [remoteData, setRemoteData] = useState(null);
     const [currentBill, setCurrentBill] = useState(null);
     const [loading, setLoading] = useState(false);
     const [meta, setMeta] = useState(null);
+    const [filterFields, setFilterFields] = useState([
+        {
+            id: "year",
+            label: "Year",
+            placeholder: "Select Year",
+            options: [
+                { value: "1", label: "One" },
+                { value: "2", label: "Two" },
+                { value: "3", label: "Three" },
+            ],
+        },
+        {
+            id: "status",
+            label: "Status",
+            placeholder: "Select Status",
+            options: [
+                { value: "open", label: "Open" },
+                { value: "closed", label: "Closed" },
+            ],
+        },
+        {
+            id: "category",
+            label: "Category",
+            placeholder: "Select Category",
+            options: [
+                { value: "a", label: "A" },
+                { value: "b", label: "B" },
+            ],
+        },
+        {
+            id: "proposer",
+            label: "Proposer",
+            placeholder: "Select Proposer",
+            options: [
+                { value: "john", label: "John" },
+                { value: "sara", label: "Sara" },
+            ],
+        },
+        {
+            id: "sortOrder",
+            label: "Sort Order",
+            placeholder: "Select Order By",
+            options: [
+                { value: "asc", label: "Ascending" },
+                { value: "desc", label: "Descending" },
+            ],
+        },
+    ]);
 
     // Get the localized data from PHP
     const settings = window.myPluginData || {};
@@ -29,6 +79,56 @@ const Home = () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                setFilterFields(prev =>
+                    prev.map(field =>
+                        field.id === "status"
+                            ? {
+                                ...field,
+                                options: data.statuses,
+                            }
+                            : field
+                    )
+                );
+                setFilterFields(prev =>
+                    prev.map(field =>
+                        field.id === "category"
+                            ? {
+                                ...field,
+                                options: data.categories,
+                            }
+                            : field
+                    )
+                );
+                setFilterFields(prev =>
+                    prev.map(field =>
+                        field.id === "proposer"
+                            ? {
+                                ...field,
+                                options: data.proposers,
+                            }
+                            : field
+                    )
+                );
+                setFilterFields(prev =>
+                    prev.map(field =>
+                        field.id === "year"
+                            ? {
+                                ...field,
+                                options: data.years,
+                            }
+                            : field
+                    )
+                );
+                setFilterFields(prev =>
+                    prev.map(field =>
+                        field.id === "sortOrder"
+                            ? {
+                                ...field,
+                                options: data.sortOptions,
+                            }
+                            : field
+                    )
+                );
                 setLoading(false);
             })
             .catch(err => {
@@ -60,8 +160,15 @@ const Home = () => {
         fetchBills(pageNumber);
     }
 
-    if (loading) return <p>{settings?.strings?.loading}</p>;
+    function handleChange(values) {
+        console.log("live changes:", values);
+    }
 
+    function handleSubmit(values) {
+        console.log("submit filters:", values);
+    }
+
+    if (loading) return <p>{settings?.strings?.loading}</p>;
 
     return (
         <div className="w-100">
@@ -70,69 +177,7 @@ const Home = () => {
                     <Card.Title className="mb-0 fs-4 fw-bold">Filter</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                    <Form>
-                        <Row className="align-items-end">
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="year">Year</Form.Label>
-                                    <Form.Select aria-label="Select Year" id="year">
-                                        <option>Select Year</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="status">Status</Form.Label>
-                                    <Form.Select aria-label="Select Status" id="status">
-                                        <option>Select Status</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="category">Category</Form.Label>
-                                    <Form.Select aria-label="Select Category" id="category">
-                                        <option>Select Category</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="proposer">Proposer</Form.Label>
-                                    <Form.Select aria-label="Select Proposer" id="proposer">
-                                        <option>Select Proposer</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label htmlFor="sortBy">Sort By</Form.Label>
-                                    <Form.Select aria-label="Select Sort Order" id="sortBy">
-                                        <option>Select Sort Order</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col className="d-flex justify-content-end align-items-center gap-3">
-                                <Button variant="secondary" type="reset">Reset</Button>
-                                <Button variant="primary" className="btn-custom" type="submit">Filter</Button>
-                            </Col>
-                        </Row>
-                    </Form>
+                    <Filter fields={filterFields} onChange={handleChange} onSubmit={handleSubmit} />
                 </Card.Body>
             </Card>
 
@@ -182,6 +227,7 @@ const Home = () => {
                 </Card.Footer>
             </Card>
 
+
             {currentBill && (
                 <Card className="mt-3">
                     <Card.Header className="px-2 py-1">
@@ -213,8 +259,9 @@ const Home = () => {
                                 Year : {format(parseISO(currentBill.bill_date), 'yyyy')}
                             </Col>
                             <Col md={3} className="d-flex justify-content-end align-items-center gap-3">
-                                <Button size="sm" className="btn-custom" href={currentBill.url} target="_blank">Read
-                                    Full <ArrowRight/></Button>
+                                <ElementorButton as="a" size="sm" className="elementor-button custom-primary"
+                                                 type="reset"  href={currentBill.url} target="_blank">
+                                    Read Full <ArrowRight/></ElementorButton>
                             </Col>
                         </Row>
                     </Card.Body>
