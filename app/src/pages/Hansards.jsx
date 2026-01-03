@@ -7,45 +7,42 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {ElementorButton} from "../components/ElementorButton";
 import {Filter} from "../components/Filter";
 import ViewButton from "../components/ViewButton";
-import defaultFilters from './defaultFilters';
+import defaultFilters from "./defaultFilters";
 
-const BillAndLegislations = () => {
+const Hansards = () => {
     // Get the localized data from PHP
     const settings = window.myPluginData || {};
-    console.log(settings);
+
     const [remoteData, setRemoteData] = useState(null);
-    const [currentBill, setCurrentBill] = useState(null);
+    const [currentHansard, setCurrentHansard] = useState(null);
     const [loading, setLoading] = useState(false);
     const [meta, setMeta] = useState(null);
     const [currentFilterOptions, setCurrentFilterOptions] = useState([])
     const [filterFields, setFilterFields] = useState(defaultFilters);
 
-
     useEffect(() => {
         setLoading(true);
-        fetchBills(1);
+        fetchHansards(1);
         fetchFiltersData();
     }, [settings.root, settings.nonce]);
 
     const handlePageChange = (pageNumber) => {
         console.log(pageNumber);
-        fetchBills(pageNumber);
+        fetchHansards(pageNumber);
     }
 
     function handleFilterChanged(filterOptions) {
-        console.log("live changes:", filterOptions);
         setCurrentFilterOptions(filterOptions);
-        fetchBills(1, filterOptions);
+        fetchHansards(1, filterOptions);
     }
 
     function handleFilterSubmitted(filterOptions) {
-        console.log("submit filters:", filterOptions);
         setCurrentFilterOptions(filterOptions);
-        fetchBills(1, filterOptions);
+        fetchHansards(1, filterOptions);
     }
 
     const fetchFiltersData = () => {
-        fetch(`${settings.root}parliament-pg/v1/get-filters-data?type=LEGISLATIVE_BILL`, {
+        fetch(`${settings.root}parliament-pg/v1/get-filters-data?type=HANSARD`, {
             headers: {
                 'X-WP-Nonce': settings.nonce
             }
@@ -110,7 +107,7 @@ const BillAndLegislations = () => {
             });
     }
 
-    const fetchBills = (page, filters = {}) => {
+    const fetchHansards = (page, filters = {}) => {
         const params = new URLSearchParams({
             page,
             ...filters
@@ -118,20 +115,17 @@ const BillAndLegislations = () => {
         console.log(params);
         setLoading(true);
         // Notice we are calling OUR site's custom endpoint
-        fetch(`${settings.root}parliament-pg/v1/get-bills?${params}`, {
+        fetch(`${settings.root}parliament-pg/v1/get-hansards?${params}`, {
             headers: {
                 'X-WP-Nonce': settings.nonce
             }
         })
-            .then(response => {
-                console.log(response);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 setRemoteData(data?.data);
                 setMeta(data);
                 setLoading(false);
-                setCurrentBill(null);
+                setCurrentHansard(null);
                 console.log(data);
             })
             .catch(err => {
@@ -155,36 +149,36 @@ const BillAndLegislations = () => {
 
             <Card className="mt-3">
                 <Card.Header className="px-2 py-1">
-                    <h5 className="fw-bold mb-0">Legislative Bills</h5>
+                    <h5 className="fw-bold mb-0">Hansard</h5>
                 </Card.Header>
                 <Card.Body className="p-0" style={{overflow: 'auto'}}>
                     <Table striped bordered hover size="sm" responsive className="table-sm m-0">
                         <thead>
                         <tr>
-                            <th>Bill ID</th>
-                            <th>Title</th>
+                            <th>No.</th>
+                            <th>Hansard Number</th>
+                            <th>Date</th>
                             <th>Status</th>
-                            <th>Bill Date</th>
                             <th>Proposer</th>
                             <th>Category</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {!loading && remoteData && remoteData?.map((item, index) =>
+                        {!loading && remoteData && remoteData?.map((hansard, index) =>
                             <tr key={index}>
-                                <td className="text-start">{item.bill_number}</td>
-                                <td className="text-start">{item.title}</td>
+                                <td className="text-start">{index+1}</td>
+                                <td className="text-start">{hansard.hansard_number}</td>
+                                <td className="text-start">{format(parseISO(hansard.hansard_date), 'do MMM, yyyy')}</td>
                                 <td className="text-center">
-                                    <span className="badge status-badge">{item.status?.name}</span>
+                                    <span className="badge status-badge">{hansard.status?.name}</span>
                                 </td>
-                                <td className="text-start">{format(parseISO(item.bill_date), 'do MMM, yyyy')}</td>
-                                <td className="text-start">{item.proposer?.first_name + ' ' + item.proposer?.last_name}</td>
+                                <td className="text-start">{hansard.proposer?.first_name + ' ' + hansard.proposer?.last_name}</td>
                                 <td className="text-center">
-                                    <Badge bg="secondary">{item.category?.name}</Badge>
+                                    <Badge bg="secondary">{hansard.category?.name}</Badge>
                                 </td>
                                 <td className="text-center">
-                                    <ViewButton onClick={() => setCurrentBill(item)}/>
+                                    <ViewButton onClick={() => setCurrentHansard(hansard)}/>
                                 </td>
                             </tr>
                         )}
@@ -216,51 +210,17 @@ const BillAndLegislations = () => {
                     <CustomPagination meta={meta} onPageChange={handlePageChange}></CustomPagination>
                 </Card.Footer>
             </Card>
-
-
-            {currentBill && (
+            {currentHansard && (
                 <Card className="mt-3">
                     <Card.Header className="px-2 py-1">
-                        <Card.Title className="mb-0">
-                            <h5 className="fw-bold mb-0">{currentBill?.title}</h5>
-                        </Card.Title>
-                        <Card.Text>
-                            <div className="d-flex align-items-start gap-3">
-                                <span className="text-muted text-sm-start">{currentBill.bill_number}</span>
-                                <span
-                                    className="text-muted text-sm-start">Proposed By : {currentBill.proposer?.first_name} on {format(parseISO(currentBill.bill_date), 'do MMMM, yyyy')}</span>
-                            </div>
-                        </Card.Text>
+                        <h5 className="fw-bold mb-0">Hansard Detail</h5>
                     </Card.Header>
                     <Card.Body>
-                        <Row>
-                            <Col md={12}>
-                                <div dangerouslySetInnerHTML={{__html: currentBill.summary}}></div>
-                            </Col>
-                        </Row>
-                        <Row className="mt-1">
-                            <Col md={3}>
-                                Status : <Badge bg="info">{currentBill.status?.name}</Badge>
-                            </Col>
-                            <Col md={3}>
-                                Category : <Badge bg="secondary">{currentBill.category?.name}</Badge>
-                            </Col>
-                            <Col md={3}>
-                                Year : {format(parseISO(currentBill.bill_date), 'yyyy')}
-                            </Col>
-                            <Col md={3} className="d-flex justify-content-end align-items-center gap-3">
-                                {currentBill.document?.url && (
-                                    <ElementorButton as="a" size="sm" className="elementor-button custom-primary"
-                                                     href={currentBill.document?.url} target="_blank">
-                                        Read Full <ArrowRight/>
-                                    </ElementorButton>
-                                )}
-                            </Col>
-                        </Row>
+                        <div dangerouslySetInnerHTML={{__html: currentHansard.detail}}></div>
                     </Card.Body>
                 </Card>
             )}
         </div>
     );
 };
-export default BillAndLegislations;
+export default Hansards;
