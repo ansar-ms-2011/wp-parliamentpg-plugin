@@ -1,6 +1,6 @@
 <?php
-class Parliament_PG_Filters_API {
-	public function register_filter_routes() {
+class Parliament_PG_API_Filters {
+	public function register_route_filters() {
 		register_rest_route('parliament-pg/v1', '/get-filters-data', array(
 			'methods'  => 'GET',
 			'callback' => array($this, 'get_filters_data'),

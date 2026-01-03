@@ -1,6 +1,6 @@
 <?php
-class Parliament_PG_Bills_API {
-	public function register_bills_routes() {
+class Parliament_PG_API_Bills {
+	public function register_route_bills() {
 		register_rest_route('parliament-pg/v1', '/get-bills', array(
 			'methods'  => 'GET',
 			'callback' => array($this, 'get_bills_data'),

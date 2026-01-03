@@ -9,8 +9,8 @@
  * @link       https://example.com
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
+ * @package    Parliament_PG
+ * @subpackage Parliament_PG/includes
  */
 
 /**
@@ -25,7 +25,7 @@
  * @since      1.0.0
  * @package    Parliament_PG
  * @subpackage Parliament_PG/includes
- * @author     Author or Company Name Here <info@example.com>
+ * @author     Ansar Mehmood Khan <ansar.dev2009@gmail.com>
  */
 class Parliament_PG {
 
@@ -35,7 +35,7 @@ class Parliament_PG {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Parliament_PG_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      Parliament_PG_Loader $loader Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -44,7 +44,7 @@ class Parliament_PG {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @var      string $plugin_name The string used to uniquely identify this plugin.
 	 */
 	protected $parliament_pg;
 
@@ -53,7 +53,7 @@ class Parliament_PG {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
+	 * @var      string $version The current version of the plugin.
 	 */
 	protected $version;
 
@@ -72,6 +72,7 @@ class Parliament_PG {
 		} else {
 			$this->version = '1.0.0';
 		}
+
 		$this->parliament_pg = 'parliament-pg';
 
 		$this->load_dependencies();
@@ -104,28 +105,33 @@ class Parliament_PG {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
+
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-parliamentpg-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
+
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-parliamentpg-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
+
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-parliamentpg-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
+
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-parliamentpg-public.php';
 
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-parliamentpg-api.php'; // Add this line
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/filters-api.php';
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/bills-api.php';
 
 		$this->loader = new Parliament_PG_Loader();
 
@@ -134,7 +140,7 @@ class Parliament_PG {
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Plugin_Name_i18n class in order to set the domain and to register the hook
+	 * Uses the Plugin_Name_i18n class to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -149,7 +155,7 @@ class Parliament_PG {
 	}
 
 	/**
-	 * Register all of the hooks related to the admin area functionality
+	 * Register all the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
 	 * @since    1.0.0
@@ -165,7 +171,7 @@ class Parliament_PG {
 	}
 
 	/**
-	 * Register all of the hooks related to the public-facing functionality
+	 * Register all the hooks related to the public-facing functionality
 	 * of the plugin.
 	 *
 	 * @since    1.0.0
@@ -190,13 +196,16 @@ class Parliament_PG {
 	 * @access   private
 	 */
 	private function define_api_hooks() {
-		$plugin_api = new Parliament_PG_API();
-		$this->loader->add_action( 'rest_api_init', $plugin_api, 'register_routes' );
+		$plugin_api_filters = new Parliament_PG_API_Filters();
+		$plugin_api_bills = new Parliament_PG_API_Bills();
+
+		$this->loader->add_action( 'rest_api_init', $plugin_api_filters, 'register_route_filters' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_bills, 'register_route_bills' );
 	}
 
 
 	/**
-	 * Run the loader to execute all of the hooks with WordPress.
+	 * Run the loader to execute all the hooks with WordPress.
 	 *
 	 * @since    1.0.0
 	 */
@@ -208,8 +217,8 @@ class Parliament_PG {
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
 	 *
-	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
+	 * @since     1.0.0
 	 */
 	public function get_parliament_pg() {
 		return $this->parliament_pg;
@@ -218,8 +227,8 @@ class Parliament_PG {
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
-	 * @since     1.0.0
 	 * @return    Parliament_PG_Loader    Orchestrates the hooks of the plugin.
+	 * @since     1.0.0
 	 */
 	public function get_loader() {
 		return $this->loader;
@@ -228,8 +237,8 @@ class Parliament_PG {
 	/**
 	 * Retrieve the version number of the plugin.
 	 *
-	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
+	 * @since     1.0.0
 	 */
 	public function get_version() {
 		return $this->version;
