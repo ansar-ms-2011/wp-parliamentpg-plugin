@@ -21,21 +21,33 @@ export default function CustomPagination({meta, onPageChange}) {
     };
 
     return (
-        <Pagination className="mt-3">
+        <Pagination className="m-0" size="sm">
             {links?.map((link, index) => {
                 const decodedLabel = link.label.replace(/&laquo;|&raquo;/g, (m) =>
                     m === "&laquo;" ? "«" : "»"
                 );
 
                 // Previous / Next
-                if (decodedLabel === "« Previous" || decodedLabel === "Next »") {
+                if (decodedLabel === "« Previous") {
                     return (
                         <Pagination.Item
                             key={index}
                             disabled={isDisabled(decodedLabel)}
                             onClick={() => handleClick(link.url, link.page)}
                         >
-                            {decodedLabel}
+                            {"« "}
+                        </Pagination.Item>
+                    );
+                }
+
+                if (decodedLabel === "Next »") {
+                    return (
+                        <Pagination.Item
+                            key={index}
+                            disabled={isDisabled(decodedLabel)}
+                            onClick={() => handleClick(link.url, link.page)}
+                        >
+                            {" »"}
                         </Pagination.Item>
                     );
                 }

@@ -13,12 +13,12 @@ export function Filter({ fields = [], onChange, onSubmit }) {
     function handleChange(e, id) {
         const newValues = { ...values, [id]: e.target.value };
         setValues(newValues);
-        onChange?.(newValues);           // notify parent immediately
+        onChange?.(newValues);
     }
 
     function handleReset() {
         setValues(initialState);
-        onChange?.(initialState);        // notify reset
+        onChange?.(initialState);
     }
 
     function handleSubmit(e) {

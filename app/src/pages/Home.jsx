@@ -1,63 +1,49 @@
 import React, {useState, useEffect} from 'react';
 import {parseISO, format} from 'date-fns';
 import CustomPagination from "../components/CustomPagination";
-import {Table, Button, Form, Modal, Navbar, Badge, Card, Row, Col} from 'react-bootstrap';
-import {Alarm, ArrowRight, Eye} from 'react-bootstrap-icons';
+import {Table, Button, Badge, Card, Row, Col, Spinner} from 'react-bootstrap';
+import {ArrowRight, Search} from 'react-bootstrap-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {ElementorButton} from "../components/ElementorButton";
 import {Filter} from "../components/Filter";
+import ViewButton from "../components/ViewButton";
 
 const Home = () => {
     const [remoteData, setRemoteData] = useState(null);
     const [currentBill, setCurrentBill] = useState(null);
     const [loading, setLoading] = useState(false);
     const [meta, setMeta] = useState(null);
+    const [currentFilterOptions, setCurrentFilterOptions] = useState([])
     const [filterFields, setFilterFields] = useState([
         {
             id: "year",
             label: "Year",
             placeholder: "Select Year",
-            options: [
-                { value: "1", label: "One" },
-                { value: "2", label: "Two" },
-                { value: "3", label: "Three" },
-            ],
+            options: [],
         },
         {
-            id: "status",
+            id: "statusId",
             label: "Status",
             placeholder: "Select Status",
-            options: [
-                { value: "open", label: "Open" },
-                { value: "closed", label: "Closed" },
-            ],
+            options: [],
         },
         {
-            id: "category",
+            id: "categoryId",
             label: "Category",
             placeholder: "Select Category",
-            options: [
-                { value: "a", label: "A" },
-                { value: "b", label: "B" },
-            ],
+            options: [],
         },
         {
-            id: "proposer",
+            id: "proposerId",
             label: "Proposer",
             placeholder: "Select Proposer",
-            options: [
-                { value: "john", label: "John" },
-                { value: "sara", label: "Sara" },
-            ],
+            options: [],
         },
         {
-            id: "sortOrder",
+            id: "sortBy",
             label: "Sort Order",
             placeholder: "Select Order By",
-            options: [
-                { value: "asc", label: "Ascending" },
-                { value: "desc", label: "Descending" },
-            ],
+            options: [],
         },
     ]);
 
@@ -70,6 +56,23 @@ const Home = () => {
         fetchFiltersData();
     }, [settings.root, settings.nonce]);
 
+    const handlePageChange = (pageNumber) => {
+        console.log(pageNumber);
+        fetchBills(pageNumber);
+    }
+
+    function handleFilterChanged(filterOptions) {
+        console.log("live changes:", filterOptions);
+        setCurrentFilterOptions(filterOptions);
+        fetchBills(1, filterOptions);
+    }
+
+    function handleFilterSubmitted(filterOptions) {
+        console.log("submit filters:", filterOptions);
+        setCurrentFilterOptions(filterOptions);
+        fetchBills(1, filterOptions);
+    }
+
     const fetchFiltersData = () => {
         fetch(`${settings.root}parliament-pg/v1/get-filters-data?type=LEGISLATIVE_BILL`, {
             headers: {
@@ -81,7 +84,7 @@ const Home = () => {
                 console.log(data);
                 setFilterFields(prev =>
                     prev.map(field =>
-                        field.id === "status"
+                        field.id === "statusId"
                             ? {
                                 ...field,
                                 options: data.statuses,
@@ -91,7 +94,7 @@ const Home = () => {
                 );
                 setFilterFields(prev =>
                     prev.map(field =>
-                        field.id === "category"
+                        field.id === "categoryId"
                             ? {
                                 ...field,
                                 options: data.categories,
@@ -101,7 +104,7 @@ const Home = () => {
                 );
                 setFilterFields(prev =>
                     prev.map(field =>
-                        field.id === "proposer"
+                        field.id === "proposerId"
                             ? {
                                 ...field,
                                 options: data.proposers,
@@ -121,7 +124,7 @@ const Home = () => {
                 );
                 setFilterFields(prev =>
                     prev.map(field =>
-                        field.id === "sortOrder"
+                        field.id === "sortBy"
                             ? {
                                 ...field,
                                 options: data.sortOptions,
@@ -136,9 +139,15 @@ const Home = () => {
             });
     }
 
-    const fetchBills = (page) => {
+    const fetchBills = (page, filters = {}) => {
+        const params = new URLSearchParams({
+            page,
+            ...filters
+        });
+        console.log(params);
+        setLoading(true);
         // Notice we are calling OUR site's custom endpoint
-        fetch(`${settings.root}parliament-pg/v1/get-bills?page=${page}`, {
+        fetch(`${settings.root}parliament-pg/v1/get-bills?${params}`, {
             headers: {
                 'X-WP-Nonce': settings.nonce
             }
@@ -147,28 +156,16 @@ const Home = () => {
             .then(data => {
                 setRemoteData(data?.data);
                 setMeta(data);
-
-                console.log(data);
                 setLoading(false);
+                console.log(data);
             })
             .catch(err => {
                 console.error("Fetch error:", err)
             });
     }
-    const handlePageChange = (pageNumber) => {
-        console.log(pageNumber);
-        fetchBills(pageNumber);
-    }
 
-    function handleChange(values) {
-        console.log("live changes:", values);
-    }
 
-    function handleSubmit(values) {
-        console.log("submit filters:", values);
-    }
-
-    if (loading) return <p>{settings?.strings?.loading}</p>;
+    // if (loading) return <p>{settings?.strings?.loading}</p>;
 
     return (
         <div className="w-100">
@@ -177,7 +174,10 @@ const Home = () => {
                     <Card.Title className="mb-0 fs-4 fw-bold">Filter</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                    <Filter fields={filterFields} onChange={handleChange} onSubmit={handleSubmit} />
+                    <Filter fields={filterFields}
+                            onChange={handleFilterChanged}
+                            onSubmit={handleFilterSubmitted}
+                    />
                 </Card.Body>
             </Card>
 
@@ -186,7 +186,7 @@ const Home = () => {
                     <Card.Title className="mb-0 fs-4 fw-bold">Legislative Bills</Card.Title>
                 </Card.Header>
                 <Card.Body className="p-0" style={{overflow: 'auto'}}>
-                    <Table striped bordered hover size="sm">
+                    <Table striped bordered hover size="sm" responsive className="table-sm m-0">
                         <thead>
                         <tr>
                             <th>Bill ID</th>
@@ -199,7 +199,7 @@ const Home = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {remoteData && remoteData.map((item, index) =>
+                        {!loading && remoteData && remoteData?.map((item, index) =>
                             <tr key={index}>
                                 <td className="text-start">{item.bill_number}</td>
                                 <td className="text-start">{item.title}</td>
@@ -212,10 +212,28 @@ const Home = () => {
                                     <Badge bg="secondary">{item.category?.name}</Badge>
                                 </td>
                                 <td className="text-center">
-                                    <Button className="btn-custom" href={item.url} size="sm"
-                                            onClick={() => setCurrentBill(item)}>
-                                        <Eye color="white" size={16}/>
-                                    </Button>
+                                    <ViewButton onClick={() => setCurrentBill(item)}/>
+                                </td>
+                            </tr>
+                        )}
+                        {loading && (
+                            <tr>
+                                <td colSpan="7" className="text-center py-4">
+                                    <div className="d-flex justify-content-center align-items-center gap-2">
+                                        <Spinner animation="border" size="sm" />
+                                        <span>Loading…</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && (!remoteData || remoteData.length === 0) && (
+                            <tr>
+                                <td colSpan="7" className="text-center py-4">
+                                    <div className="text-muted">
+                                        <Search className="mb-2"/>
+                                        <div>No results found.</div>
+                                        <small>Try adjusting your filters or search criteria.</small>
+                                    </div>
                                 </td>
                             </tr>
                         )}
@@ -245,7 +263,7 @@ const Home = () => {
                     <Card.Body>
                         <Row>
                             <Col md={12}>
-                                <div dangerouslySetInnerHTML={{ __html: currentBill.summary }}></div>
+                                <div dangerouslySetInnerHTML={{__html: currentBill.summary}}></div>
                             </Col>
                         </Row>
                         <Row className="mt-1">
@@ -259,9 +277,12 @@ const Home = () => {
                                 Year : {format(parseISO(currentBill.bill_date), 'yyyy')}
                             </Col>
                             <Col md={3} className="d-flex justify-content-end align-items-center gap-3">
-                                <ElementorButton as="a" size="sm" className="elementor-button custom-primary"
-                                                 type="reset"  href={currentBill.url} target="_blank">
-                                    Read Full <ArrowRight/></ElementorButton>
+                                {currentBill.document?.url && (
+                                    <ElementorButton as="a" size="sm" className="elementor-button custom-primary"
+                                                     href={currentBill.document?.url} target="_blank">
+                                        Read Full <ArrowRight/>
+                                    </ElementorButton>
+                                )}
                             </Col>
                         </Row>
                     </Card.Body>
