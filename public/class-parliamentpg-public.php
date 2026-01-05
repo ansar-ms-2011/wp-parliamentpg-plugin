@@ -60,10 +60,44 @@ class Parliament_PG_Public {
 		add_shortcode('parliament_pg_shortcode', [$this, 'parliament_pg_handler']);
 	}
 
-	public function parliament_pg_handler () {
-        $this->enqueue_styles();
-        $this->enqueue_scripts();
-		return file_get_contents( plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/plugin-parliamentpg-display.php' );
+	public function parliament_pg_handler($atts) {
+		$this->enqueue_styles();
+		$this->enqueue_scripts();
+
+		// Get all saved endpoints
+		$endpoints = get_option('parliament_pg_view_endpoints', []);
+
+		// Merge attributes with defaults
+		$atts = shortcode_atts(
+			[
+				'view' => 'default',
+				'id'   => '',
+			],
+			$atts,
+			'parliament_pg_shortcode'
+		);
+
+		// Load the partial HTML with
+		// Variables you want to pass
+		$view = esc_attr($atts['view']);
+		$id   = esc_attr($atts['id']);
+
+		if (!isset($endpoints[$view])) {
+			return "<p>No endpoints configured for this view='{$view}'</p>";
+		}
+
+		$backend_url  = isset( $endpoints[ $view ]['backend'] ) ? $endpoints[ $view ]['backend'] : '';
+		$frontend_url = isset( $endpoints[ $view ]['frontend'] ) ? $endpoints[ $view ]['frontend'] : '';
+
+		// Path to the partial
+		$partial_file = plugin_dir_path(dirname(__FILE__)) . 'public/partials/plugin-parliamentpg-display.php';
+
+		// Start output buffering
+		ob_start();
+		include $partial_file; // partial can use $view and $id
+		$html = ob_get_clean();
+
+		return $html;
 	}
 
 	/**

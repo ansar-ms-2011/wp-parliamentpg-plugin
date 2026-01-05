@@ -1,4 +1,5 @@
 <?php
+
 class Parliament_PG_API_Bills {
 	public function register_route_bills() {
 		register_rest_route('parliament-pg/v1', '/get-bills', array(
@@ -44,7 +45,7 @@ class Parliament_PG_API_Bills {
 		);
 
 		// Optional filters
-		foreach (['year', 'category_id', 'status_id', 'proposer_id', 'sortOrder'] as $param) {
+		foreach (['year', 'categoryId', 'statusId', 'proposerId', 'sortBy'] as $param) {
 			$value = $request->get_param($param);
 			if ($value !== null && $value !== '') {
 				$query[$param] = $value;
@@ -59,12 +60,18 @@ class Parliament_PG_API_Bills {
 		$response = wp_remote_get($external_url);
 
 		if (is_wp_error($response)) {
-			return new WP_Error('no_data', 'Unable to fetch bills data', array('status' => 404));
+			return new WP_Error(
+				'external_api_error',
+				$response->get_error_message(),
+				['status' => 500]
+			);
 		}
 
 		$body = wp_remote_retrieve_body($response);
 		$data = json_decode($body, true);
-
+		if ($data === null) {
+			parliament_pg_log("JSON decode failed — error: " . json_last_error_msg());
+		}
 		return rest_ensure_response($data);
 	}
 }

@@ -1,10 +1,9 @@
 <?php
-class Parliament_PG_API_Notice_Papers {
-
-	public function register_route_notice_papers() {
-		register_rest_route('parliament-pg/v1', '/get-notice-papers', array(
+class Parliament_PG_API_Meetings {
+	public function register_route_meetings() {
+		register_rest_route('parliament-pg/v1', '/get-meetings', array(
 			'methods'  => 'GET',
-			'callback' => array($this, 'get_notice_papers_data'),
+			'callback' => array($this, 'get_meetings_data'),
 			'permission_callback' => '__return_true',
 			'args' => array(
 				'page' => array(
@@ -23,9 +22,6 @@ class Parliament_PG_API_Notice_Papers {
 				'statusId' => array(
 					'sanitize_callback' => 'absint',
 				),
-				'proposerId' => array(
-					'sanitize_callback' => 'absint',
-				),
 				'sortBy' => array(
 					'sanitize_callback' => 'sanitize_text_field',
 					'default' => 'desc',
@@ -34,37 +30,37 @@ class Parliament_PG_API_Notice_Papers {
 		));
 	}
 
-	public function get_notice_papers_data( WP_REST_Request $request ) {
-
+	public function get_meetings_data( WP_REST_Request $request ) {
 		$query = array(
 			'page'       => $request->get_param('page') ?: 1,
-			'statusId'   => $request->get_param('statusId') ?: '',
-			'categoryId' => $request->get_param('categoryId') ?: '',
-			'proposerId' => $request->get_param('proposerId') ?: '',
-			'sortBy'     => $request->get_param('sortBy') ?: '',
+			'statusId'       => $request->get_param('statusId') ?: '',
+			'categoryId'       => $request->get_param('categoryId') ?: '',
+			'sortBy'       => $request->get_param('sortBy') ?: '',
 			'year'       => $request->get_param('year') ?: '',
 		);
 
-		$external_url = add_query_arg($query, 'http://pdis.test/api/v1/notice-papers');
+		// Optional filters
+		foreach (['year', 'category_id', 'status_id', 'sortOrder'] as $param) {
+			$value = $request->get_param($param);
+			if ($value !== null && $value !== '') {
+				$query[$param] = $value;
+			}
+		}
+
+		$external_url = add_query_arg(
+			$query,
+			'http://pdis.test/api/v1/meetings'
+		);
 
 		$response = wp_remote_get($external_url);
 
 		if (is_wp_error($response)) {
-			parliament_pg_log("HTTP error: " . $response->get_error_message());
-			return new WP_Error('external_api_error', $response->get_error_message(), ['status' => 500]);
+			return new WP_Error('no_data', 'Unable to fetch meetings data', array('status' => 404));
 		}
 
 		$body = wp_remote_retrieve_body($response);
 		$data = json_decode($body, true);
 
-		if ($data === null) {
-			parliament_pg_log("JSON decode failed — error: " . json_last_error_msg());
-		}
-
 		return rest_ensure_response($data);
 	}
-
-
-
-
 }

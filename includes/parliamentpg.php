@@ -1,5 +1,21 @@
 <?php
 
+if ( ! function_exists('parliament_pg_log') ) {
+	function parliament_pg_log( $message ) {
+		$file = WP_CONTENT_DIR . '/parliament-debug.log';
+
+		if ( is_array($message) || is_object($message) ) {
+			$message = print_r($message, true);
+		}
+
+		error_log(
+			"[" . date("Y-m-d H:i:s") . "] " . $message . "\n",
+			3,
+			$file
+		);
+	}
+}
+
 /**
  * The file that defines the core plugin class
  *
@@ -106,20 +122,20 @@ class Parliament_PG {
 		 * core plugin.
 		 */
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-parliamentpg-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/parliamentpg-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-parliamentpg-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/parliamentpg-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-parliamentpg-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/parliamentpg-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -129,9 +145,15 @@ class Parliament_PG {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-parliamentpg-public.php';
 
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/filters-api.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/filters.php';
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/bills-api.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/bills.php';
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/hansards.php';
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/meetings.php';
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/notice-papers.php';
 
 		$this->loader = new Parliament_PG_Loader();
 
@@ -198,9 +220,15 @@ class Parliament_PG {
 	private function define_api_hooks() {
 		$plugin_api_filters = new Parliament_PG_API_Filters();
 		$plugin_api_bills = new Parliament_PG_API_Bills();
+		$plugin_api_hansards = new Parliament_PG_API_Hansards();
+		$plugin_api_meetings = new Parliament_PG_API_Meetings();
+		$plugin_api_notice_papers = new Parliament_PG_API_Notice_Papers();
 
 		$this->loader->add_action( 'rest_api_init', $plugin_api_filters, 'register_route_filters' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_bills, 'register_route_bills' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_hansards, 'register_route_hansards' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_meetings, 'register_route_meetings' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_notice_papers, 'register_route_notice_papers' );
 	}
 
 

@@ -1,9 +1,9 @@
 <?php
-class Parliament_PG_API_Bills {
-	public function register_route_bills() {
-		register_rest_route('parliament-pg/v1', '/get-bills', array(
+class Parliament_PG_API_Hansards {
+	public function register_route_hansards() {
+		register_rest_route('parliament-pg/v1', '/get-hansards', array(
 			'methods'  => 'GET',
-			'callback' => array($this, 'get_bills_data'),
+			'callback' => array($this, 'get_hansards_data'),
 			'permission_callback' => '__return_true',
 			'args' => array(
 				'page' => array(
@@ -33,7 +33,7 @@ class Parliament_PG_API_Bills {
 		));
 	}
 
-	public function get_bills_data( WP_REST_Request $request ) {
+	public function get_hansards_data( WP_REST_Request $request ) {
 		$query = array(
 			'page'       => $request->get_param('page') ?: 1,
 			'statusId'       => $request->get_param('statusId') ?: '',
@@ -53,7 +53,7 @@ class Parliament_PG_API_Bills {
 
 		$external_url = add_query_arg(
 			$query,
-			'http://pdis.test/api/v1/bills'
+			'http://pdis.test/api/v1/hansards'
 		);
 
 		$response = wp_remote_get($external_url);

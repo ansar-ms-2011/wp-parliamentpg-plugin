@@ -2,3 +2,15 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+.parliament-pg-setting-form h2{
+    font-size: 20px;
+}
+
+.url_field{
+    width: 100%;
+}
+.custom-table th,
+.custom-table td{
+    padding: 5px 0 !important;
+}

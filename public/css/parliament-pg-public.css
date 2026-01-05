@@ -2,4 +2,59 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
- 
+
+
+.card{
+    background-color: transparent !important;
+}
+
+.btn-custom{
+    border-color:#1f2d36 !important;
+    background-color: #1f2d36 !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    padding: 8px !important;
+    border-radius: 4px !important;
+}
+.btn-custom:hover{
+    background-color: #6b7444 !important;
+}
+
+li.custom-page-item span{
+    border-color:#1f2d36 !important;
+    background-color: #1f2d36 !important;
+    color: #fff !important;
+}
+
+li.custom-page-item .page-link{
+    padding: 3px 6px !important;
+}
+
+.custom-primary{
+    background-color: #003B2E !important;
+}
+
+.compact-view-btn {
+    padding: 2px 6px;
+    line-height: 1;
+    border-radius: 6px;
+}
+
+.status-badge{
+    width: 100px !important;
+    background-color: #9dafac !important;
+}
+
+.custom-link{
+    color: #003B2E !important;
+    text-decoration: none !important;
+}
+
+.custom-link:hover{
+    transform: scale(1.05);
+}
+
+.custom-link:focus{
+    transform: scale(0.95);
+    color: #fff !important;
+}

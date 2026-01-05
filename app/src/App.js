@@ -3,6 +3,7 @@ import BillAndLegislations from "./pages/BillsAndLegislations";
 import DefaultView  from "./pages/DefaultView";
 import NoticePapers from "./pages/NoticePapers";
 import Hansards from "./pages/Hansards";
+import Meetings from "./pages/Meetings";
 
 function App({ view, id }) {
   switch(view) {
@@ -12,6 +13,8 @@ function App({ view, id }) {
       return <NoticePapers id={id} />;
     case 'hansards':
       return <Hansards id={id} />;
+    case 'meetings':
+      return <Meetings id={id} />;
     default:
       return <DefaultView id={id} />;
   }

@@ -42,7 +42,7 @@ define( 'PARLIAMENT_PG_VERSION', '1.0.0' );
  * This action is documented in includes/class-parliamentpg-activator.php
  */
 function activate_parliamentpg() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-parliamentpg-activator.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/parliamentpg-activator.php';
 	Parliament_PG_Activator::activate();
 }
 
@@ -51,7 +51,7 @@ function activate_parliamentpg() {
  * This action is documented in includes/class-parliamentpg-deactivator.php
  */
 function deactivate_parliamentpg() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-parliamentpg-deactivator.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/parliamentpg-deactivator.php';
 	Parliament_PG_Deactivator::deactivate();
 }
 
@@ -62,7 +62,7 @@ register_deactivation_hook( __FILE__, 'deactivate_parliamentpg' );
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-parliamentpg.php';
+require plugin_dir_path( __FILE__ ) . 'includes/parliamentpg.php';
 
 /**
  * Begins execution of the plugin.
