@@ -1,10 +1,9 @@
 <?php
-class Parliament_PG_API_Notice_Papers {
-
-	public function register_route_notice_papers() {
-		register_rest_route('parliament-pg/v1', '/get-notice-papers', array(
+class Parliament_PG_API_Members {
+	public function register_route_members() {
+		register_rest_route('parliament-pg/v1', '/get-members', array(
 			'methods'  => 'GET',
-			'callback' => array($this, 'get_notice_papers_data'),
+			'callback' => array($this, 'get_members_data'),
 			'permission_callback' => '__return_true',
 			'args' => array(
 				'page' => array(
@@ -23,9 +22,6 @@ class Parliament_PG_API_Notice_Papers {
 				'statusId' => array(
 					'sanitize_callback' => 'absint',
 				),
-				'proposerId' => array(
-					'sanitize_callback' => 'absint',
-				),
 				'sortBy' => array(
 					'sanitize_callback' => 'sanitize_text_field',
 					'default' => 'desc',
@@ -34,19 +30,26 @@ class Parliament_PG_API_Notice_Papers {
 		));
 	}
 
-	public function get_notice_papers_data( WP_REST_Request $request ) {
+	public function get_members_data( WP_REST_Request $request ) {
 		$endpoints = get_option( 'parliament_pg_view_endpoints', [] );
 
 		$query = array(
 			'page'       => $request->get_param('page') ?: 1,
-			'statusId'   => $request->get_param('statusId') ?: '',
-			'categoryId' => $request->get_param('categoryId') ?: '',
-			'proposerId' => $request->get_param('proposerId') ?: '',
-			'sortBy'     => $request->get_param('sortBy') ?: '',
+			'statusId'       => $request->get_param('statusId') ?: '',
+			'categoryId'       => $request->get_param('categoryId') ?: '',
+			'sortBy'       => $request->get_param('sortBy') ?: '',
 			'year'       => $request->get_param('year') ?: '',
 		);
 
-		$external_url = add_query_arg($query, $endpoints['notice-papers']['backend']);
+		// Optional filters
+		foreach (['year', 'category_id', 'status_id', 'sortOrder'] as $param) {
+			$value = $request->get_param($param);
+			if ($value !== null && $value !== '') {
+				$query[$param] = $value;
+			}
+		}
+
+		$external_url = add_query_arg( $query, $endpoints['members']['backend']);
 
 		$response = wp_remote_get($external_url);
 
@@ -58,7 +61,7 @@ class Parliament_PG_API_Notice_Papers {
 			);
 		}
 
-		$body = wp_remote_retrieve_body($response);
+		$body = wp_remote_retrieve_body($response, ['sslverify' => false]);
 		$data = json_decode($body, true);
 		if ($data === null) {
 			parliament_pg_log("JSON decode failed — error: " . json_last_error_msg());
@@ -66,8 +69,4 @@ class Parliament_PG_API_Notice_Papers {
 
 		return rest_ensure_response($data);
 	}
-
-
-
-
 }

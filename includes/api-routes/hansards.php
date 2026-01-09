@@ -34,6 +34,8 @@ class Parliament_PG_API_Hansards {
 	}
 
 	public function get_hansards_data( WP_REST_Request $request ) {
+		$endpoints = get_option( 'parliament_pg_view_endpoints', [] );
+
 		$query = array(
 			'page'       => $request->get_param('page') ?: 1,
 			'statusId'       => $request->get_param('statusId') ?: '',
@@ -51,19 +53,23 @@ class Parliament_PG_API_Hansards {
 			}
 		}
 
-		$external_url = add_query_arg(
-			$query,
-			'http://pdis.test/api/v1/hansards'
-		);
+		$external_url = add_query_arg($query, $endpoints['hansards']['backend'] );
 
 		$response = wp_remote_get($external_url);
 
 		if (is_wp_error($response)) {
-			return new WP_Error('no_data', 'Unable to fetch bills data', array('status' => 404));
+			return new WP_Error(
+				'backend_api_error',
+				$response->get_error_message(),
+				['status' => 500]
+			);
 		}
 
 		$body = wp_remote_retrieve_body($response);
 		$data = json_decode($body, true);
+		if ($data === null) {
+			parliament_pg_log("JSON decode failed — error: " . json_last_error_msg());
+		}
 
 		return rest_ensure_response($data);
 	}

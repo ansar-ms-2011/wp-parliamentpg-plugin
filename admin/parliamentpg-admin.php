@@ -108,6 +108,26 @@ class Parliament_PG_Admin {
 	}
 
     public function merge_new_view_before_save($new_value, $old_value) {
+        if (!is_array($new_value)) {
+            $new_value = [];
+        }
+
+        // --- DELETE SELECTED VIEWS ---
+        if (
+                is_admin() &&
+                !empty($_POST['delete_views']) &&
+                current_user_can('manage_options') &&
+                check_admin_referer('parliament_pg_options_group-options')
+        ) {
+            $delete_views = array_map('sanitize_text_field', (array) $_POST['delete_views']);
+
+            foreach ($delete_views as $view_key) {
+                if (isset($new_value[$view_key])) {
+                    unset($new_value[$view_key]);
+                }
+            }
+        }
+
         // Only merge if admin and form submitted
         if (
                 is_admin() &&
@@ -117,7 +137,7 @@ class Parliament_PG_Admin {
         ) {
             $view = sanitize_text_field($_POST['new_view']);
             $backend  = esc_url_raw( isset( $_POST['new_backend_laravel'] ) ? $_POST['new_backend_laravel'] : '' );
-            $frontend = esc_url_raw( isset( $_POST['new_frontend_wp'] ) ? $_POST['new_frontend_wp'] : '' );
+            $frontend = sanitize_text_field( $_POST['new_frontend_wp'] );
 
             if (!is_array($new_value)) $new_value = [];
             // Merge new view
@@ -157,19 +177,25 @@ class Parliament_PG_Admin {
 	/**
 	 * Sanitize view endpoints.
 	 */
-	public function sanitize_endpoints( $input ) {
-		$clean = [];
-		if ( is_array( $input ) ) {
-			foreach ( $input as $view => $urls ) {
-				$clean[ $view ] = [
-					'backend'  => isset( $urls['backend'] ) ? esc_url_raw( $urls['backend'] ) : '',
-					'frontend' => isset( $urls['frontend'] ) ? esc_url_raw( $urls['frontend'] ) : ''
-				];
-			}
-		}
 
-		return $clean;
-	}
+    public function sanitize_endpoints( $input ) {
+        $clean = [];
+        $home  = trailingslashit( home_url() );
+
+        if ( is_array( $input ) ) {
+            foreach ( $input as $view => $urls ) {
+
+                $frontend = isset($urls['frontend']) ? trim($urls['frontend']) : '';
+
+                $clean[$view] = [
+                        'backend'  => isset($urls['backend']) ? esc_url_raw($urls['backend']) : '',
+                        'frontend' => sanitize_text_field($frontend),
+                ];
+            }
+        }
+
+        return $clean;
+    }
 
 	/**
 	 * Display settings page HTML.
@@ -178,15 +204,16 @@ class Parliament_PG_Admin {
 		$endpoints = get_option( 'parliament_pg_view_endpoints', [] );
 		?>
         <div class="wrap">
-            <h1>Parliament PG Plugin Endpoints</h1>
+            <h1>Parliament PG Plugin Endpoints [parliament_pg view="bills"]</h1>
             <form method="post" action="options.php">
 				<?php settings_fields( 'parliament_pg_options_group' ); ?>
                 <table class="form-table custom-table">
                     <thead>
                     <tr>
-                        <th>Short Code Attr. Name </th>
-                        <th>Frontend Endpoint (WP)</th>
+                        <th>Attribute Name </th>
+                        <th>Frontend Endpoint (Relative)</th>
                         <th>Backend Endpoint (Laravel)</th>
+                        <th>Delete</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -198,10 +225,18 @@ class Parliament_PG_Admin {
 
                             <td><input type="text"
                                        name="parliament_pg_view_endpoints[<?php echo esc_attr( $view ); ?>][frontend]"
-                                       value="<?php echo esc_url( $urls['frontend'] ); ?>" class="regular-text"></td>
+                                       value="<?php echo esc_attr($urls['frontend']); ?>" class="regular-text"></td>
                             <td><input type="text"
                                        name="parliament_pg_view_endpoints[<?php echo esc_attr( $view ); ?>][backend]"
                                        value="<?php echo esc_url( $urls['backend'] ); ?>" class="regular-text"></td>
+                            <td>
+                                <label>
+                                    <input type="checkbox"
+                                           name="delete_views[]"
+                                           value="<?php echo esc_attr( $view ); ?>">
+                                    Remove
+                                </label>
+                            </td>
                         </tr>
 					<?php endforeach; ?>
 

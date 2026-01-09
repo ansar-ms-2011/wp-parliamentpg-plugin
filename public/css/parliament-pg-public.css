@@ -58,3 +58,131 @@ li.custom-page-item .page-link{
     transform: scale(0.95);
     color: #fff !important;
 }
+
+.avatar-lg {
+    width: 100px;
+    height: 100px;
+}
+
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    border-radius: 50%;
+    background: #ccd1df;
+}
+
+.icon-circle {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #b5bcc8;
+}
+
+#members-page ul{
+    margin: unset !important;
+}
+
+.btn-custom-primary {
+    background: #003B2E;
+    color: #fff;
+    border: 1px solid #003B2E;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: 0.15s;
+}
+
+.btn-custom-primary:hover,
+.btn-custom-primary.active {
+    background: #025544;
+    border-color: #025544;
+}
+
+.btn-custom-primary:disabled {
+    opacity: .4;
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .btn-custom-primary {
+        flex: 1 0 18%;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+}
+
+
+#members-page .cards-wrapper {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+}
+
+#members-page .cards-wrapper .card {
+    min-width: 250px;
+}
+
+/* Tablet+: switch to wrapping grid */
+@media (min-width: 768px) {
+    #members-page .cards-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        white-space: normal;
+        overflow-x: visible;
+    }
+}
+
+.avatar-lg img {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+}
+
+@media (max-width: 575px) {
+    .avatar-lg img {
+        width: 72px;
+        height: 72px;
+    }
+}
+
+@media (max-width: 575px) {
+    #members-page h5 {
+        font-size: 14px;
+    }
+    #members-page p {
+        font-size: 12px;
+    }
+}
+
+
+.hover-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    min-height: 200px;
+}
+
+.hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.hover-card:hover {
+    border-color: var(--bs-primary);
+}
+
+.hover-card .card-title {
+    transition: color 0.25s ease;
+}
+
+.hover-card:hover .card-title {
+    color: var(--bs-primary);
+}

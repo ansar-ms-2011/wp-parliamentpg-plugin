@@ -20,7 +20,7 @@
         echo $view;
     } ?>" data-id="<?php if ( isset( $id ) ) {
         echo $id;
-    } ?>" data-wp-url="<?php if ( isset( $frontend_url ) ) {
+    } ?>" data-wpUrl="<?php if ( isset( $frontend_url ) ) {
     echo $frontend_url;
 } ?>"
 >

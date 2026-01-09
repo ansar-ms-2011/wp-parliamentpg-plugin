@@ -142,18 +142,18 @@ class Parliament_PG {
 		 * side of the site.
 		 */
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-parliamentpg-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/parliamentpg-public.php';
 
 
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/filters.php';
-
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/bills.php';
-
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/hansards.php';
-
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/meetings.php';
-
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/notice-papers.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/members.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/governors.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/districts.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/provinces.php';
 
 		$this->loader = new Parliament_PG_Loader();
 
@@ -220,6 +220,10 @@ class Parliament_PG {
 	private function define_api_hooks() {
 		$plugin_api_filters = new Parliament_PG_API_Filters();
 		$plugin_api_bills = new Parliament_PG_API_Bills();
+		$plugin_api_members = new Parliament_PG_API_Members();
+		$plugin_api_districts = new Parliament_PG_API_Districts();
+		$plugin_api_provinces = new Parliament_PG_API_Provinces();
+		$plugin_api_governors = new Parliament_PG_API_Governors();
 		$plugin_api_hansards = new Parliament_PG_API_Hansards();
 		$plugin_api_meetings = new Parliament_PG_API_Meetings();
 		$plugin_api_notice_papers = new Parliament_PG_API_Notice_Papers();
@@ -229,6 +233,10 @@ class Parliament_PG {
 		$this->loader->add_action( 'rest_api_init', $plugin_api_hansards, 'register_route_hansards' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_meetings, 'register_route_meetings' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_notice_papers, 'register_route_notice_papers' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_members, 'register_route_members' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_governors, 'register_route_governors' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_districts, 'register_route_districts' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_provinces, 'register_route_provinces' );
 	}
 
 

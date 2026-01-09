@@ -9,7 +9,7 @@ import {Filter} from "../components/Filter";
 import ViewButton from "../components/ViewButton";
 import defaultFilters from "./defaultFilters";
 
-const Hansards = () => {
+const Hansards = ({id, url, type}) => {
     // Get the localized data from PHP
     const settings = window.myPluginData || {};
 
@@ -115,7 +115,7 @@ const Hansards = () => {
         console.log(params);
         setLoading(true);
         // Notice we are calling OUR site's custom endpoint
-        fetch(`${settings.root}parliament-pg/v1/get-hansards?${params}`, {
+        fetch(`${settings.root+url}?${params}`, {
             headers: {
                 'X-WP-Nonce': settings.nonce
             }

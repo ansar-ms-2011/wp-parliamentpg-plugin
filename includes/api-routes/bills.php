@@ -35,6 +35,8 @@ class Parliament_PG_API_Bills {
 	}
 
 	public function get_bills_data( WP_REST_Request $request ) {
+		$endpoints = get_option( 'parliament_pg_view_endpoints', [] );
+
 		$query = array(
 			'page'       => $request->get_param('page') ?: 1,
 			'statusId'       => $request->get_param('statusId') ?: '',
@@ -52,16 +54,13 @@ class Parliament_PG_API_Bills {
 			}
 		}
 
-		$external_url = add_query_arg(
-			$query,
-			'http://pdis.test/api/v1/bills'
-		);
+		$external_url = add_query_arg($query, $endpoints['bills']['backend']);
 
 		$response = wp_remote_get($external_url);
 
 		if (is_wp_error($response)) {
 			return new WP_Error(
-				'external_api_error',
+				'backend_api_error',
 				$response->get_error_message(),
 				['status' => 500]
 			);

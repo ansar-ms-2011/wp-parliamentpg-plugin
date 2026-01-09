@@ -29,4 +29,24 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
+	document.addEventListener('DOMContentLoaded', function () {
+		const form = document.querySelector('form[action="options.php"]');
+		console.log(form);
+		if (!form) return;
+
+		form.addEventListener('submit', function (e) {
+			const checked = form.querySelectorAll('input[name="delete_views[]"]:checked');
+
+			if (checked.length > 0) {
+				const message =
+					`You are about to permanently delete ${checked.length} endpoint(s).\n\n` +
+					`This cannot be undone.\n\nContinue?`;
+
+				if (!window.confirm(message)) {
+					e.preventDefault();
+				}
+			}
+		});
+	});
+
 })( jQuery );

@@ -57,10 +57,10 @@ class Parliament_PG_Public {
 	}
 
 	public function register () {
-		add_shortcode('parliament_pg_shortcode', [$this, 'parliament_pg_handler']);
+		add_shortcode('parliament_pg', [$this, 'shortcode_handler']);
 	}
 
-	public function parliament_pg_handler($atts) {
+	public function shortcode_handler($atts) {
 		$this->enqueue_styles();
 		$this->enqueue_scripts();
 
@@ -74,7 +74,7 @@ class Parliament_PG_Public {
 				'id'   => '',
 			],
 			$atts,
-			'parliament_pg_shortcode'
+			'parliament_pg'
 		);
 
 		// Load the partial HTML with
