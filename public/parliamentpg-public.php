@@ -121,6 +121,12 @@ class Parliament_PG_Public {
 		wp_enqueue_style( $this->parliament_pg, plugin_dir_url( __FILE__ ) . 'css/parliament-pg-public.css', array(), $this->version, 'all' );
         wp_enqueue_style( 'parliament_pg_react_app_css', plugin_dir_url( __FILE__ ) . 'assets/css/parliament-pg-plugin.css', array(), $this->version, 'all' );
 
+		wp_enqueue_style(
+			'remixicon',
+			'https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css',
+			[],
+			null
+		);
 	}
 
 	/**

@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import 'remixicon/fonts/remixicon.css';
 
 // Get the root element
 const rootElement = document.getElementById('parliament-pg-root');

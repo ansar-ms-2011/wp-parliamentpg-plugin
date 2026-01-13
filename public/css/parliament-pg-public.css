@@ -186,3 +186,7 @@ li.custom-page-item .page-link{
 .hover-card:hover .card-title {
     color: var(--bs-primary);
 }
+
+.list-inline{
+    margin: unset !important;
+}

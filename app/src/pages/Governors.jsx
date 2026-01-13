@@ -138,8 +138,8 @@ export default function Governors({ id, url, type }) {
                                         </div>
                                     </Card.Body>
 
-                                    <Card.Footer className="p-4 text-center">
-                                        <ul className="list-inline mb-0">
+                                    <Card.Footer className="text-center">
+                                        <ul className="list-inline mb-0" style={{margin: "unset !important;"}}>
                                             <li className="list-inline-item">
                                                 <a href="#" className="icon-circle me-2">
                                                     <i className="ri-message-2-line"></i>
