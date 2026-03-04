@@ -49,3 +49,25 @@ class Parliament_PG_API_Images {
 		return rest_ensure_response($data);
 	}
 }
+
+//
+//add_action('rest_api_init', function () {
+//	register_rest_route('img-proxy/v1', '/fetch', [
+//		'methods' => 'GET',
+//		'callback' => function ($request) {
+//			$url = esc_url_raw($request->get_param('url'));
+//
+//			$response = wp_remote_get($url);
+//			if (is_wp_error($response)) {
+//				return new WP_Error('fetch_failed', 'Image fetch failed');
+//			}
+//
+//			$body = wp_remote_retrieve_body($response);
+//			$type = wp_remote_retrieve_header($response, 'content-type');
+//
+//			header("Content-Type: $type");
+//			echo $body;
+//			exit;
+//		}
+//	]);
+//});
