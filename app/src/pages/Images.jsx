@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Card, Col, Container, Row, Modal } from "react-bootstrap";
+import {Card, Col, Container, Row, Modal, Spinner} from "react-bootstrap";
 
 export default function Images({ id, url, type }) {
 
@@ -71,15 +71,12 @@ export default function Images({ id, url, type }) {
     return (
         <>
             <div className="page-content" id="images-page">
-
                 <Container fluid>
-                    {loading && <p>Loading images…</p>}
-
                     <Row>
-                        <Col xs={12} md={4}>
-                            <div className="mb-3">
-                                <label htmlFor="albumSelect" className="form-label">
-                                    Select Album:
+                        <Col xs={12} md={6}>
+                            <div className="mb-3 d-flex align-items-center justify-content-start">
+                                <label htmlFor="albumSelect" className="me-3">
+                                    <span className="text-nowrap fw-bold">Albums </span>
                                 </label>
                                 <select
                                     id="albumSelect"
@@ -102,14 +99,19 @@ export default function Images({ id, url, type }) {
                         </Col>
                     </Row>
 
-                    <Row className="mt-3">
-                        {images.map((image, index) => (
+                    <Row className="mt-1">
+                        {loading && (
+                            <div className="text-center my-5">
+                                <Spinner animation="border"/>
+                            </div>
+                        )}
+                        {!loading && images.length > 0 &&  images.map((image, index) => (
                             <Col
                                 key={image.id}
                                 xs={12}
                                 sm={6}
                                 lg={4}
-                                className="mb-4 d-flex"
+                                className="mb-1 d-flex"
                             >
                                 <Card
                                     className="w-100 image-card"
@@ -138,10 +140,12 @@ export default function Images({ id, url, type }) {
                 onHide={closeLightbox}
                 centered
                 size="lg"
-                className="lightbox-modal"
+                className=""
             >
+                <Modal.Header closeButton>
+                    <Modal.Title style={{fontSize: "1rem"}}>{images[activeIndex]?.title}</Modal.Title>
+                </Modal.Header>
                 <Modal.Body className="text-center p-0 position-relative">
-
                     {images.length > 0 && (
                         <>
                             <img
@@ -149,10 +153,6 @@ export default function Images({ id, url, type }) {
                                 alt={images[activeIndex]?.title}
                                 className="lightbox-image"
                             />
-
-                            <div className="lightbox-caption">
-                                {images[activeIndex]?.title}
-                            </div>
 
                             <button
                                 className="lightbox-nav left"
