@@ -10,6 +10,9 @@ import Districts from "./pages/Districts";
 import Provinces from "./pages/Provinces";
 import Images from "./pages/Images";
 import Videos from "./pages/Videos";
+import Questions from "./pages/Questions";
+import MonthSessions from "./pages/MonthSessions";
+import FullYearSessions from "./pages/FullYearSessions";
 
 function App({ view, id, url }) {
   switch(view) {
@@ -33,8 +36,14 @@ function App({ view, id, url }) {
       return <Images id={id} url={url} type="images"/>;
     case 'videos':
       return <Videos id={id} url={url} type="videos"/>;
+    case 'questions':
+      return <Questions id={id} url={url} type="questions"/>;
+    case 'month-sessions':
+      return <MonthSessions id={id} url={url} type="month-sessions" />;
+    case 'year-sessions':
+      return <FullYearSessions id={id} url={url} type="year-sessions" />;
     default:
-      return <DefaultView id={id} />;
+      return <DefaultView id={id}/>;
   }
 }
 

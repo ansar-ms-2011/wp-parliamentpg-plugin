@@ -41,7 +41,7 @@ if ( ! function_exists('parliament_pg_log') ) {
  * @since      1.0.0
  * @package    Parliament_PG
  * @subpackage Parliament_PG/includes
- * @author     Ansar Mehmood Khan <ansar.dev2009@gmail.com>
+ * @author     Wasif Raza <wasif.raza@gmail.com>
  */
 class Parliament_PG {
 
@@ -156,6 +156,8 @@ class Parliament_PG {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/provinces.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/images.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/videos.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/questions.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/sessions.php';
 
 		$this->loader = new Parliament_PG_Loader();
 
@@ -224,6 +226,8 @@ class Parliament_PG {
 		$plugin_api_bills = new Parliament_PG_API_Bills();
 		$plugin_api_images = new Parliament_PG_API_Images();
 		$plugin_api_videos = new Parliament_PG_API_Videos();
+		$plugin_api_questions = new Parliament_PG_API_Questions();
+		$plugin_api_sessions = new Parliament_PG_API_Sessions();
 		$plugin_api_members = new Parliament_PG_API_Members();
 		$plugin_api_filters = new Parliament_PG_API_Filters();
 		$plugin_api_districts = new Parliament_PG_API_Districts();
@@ -244,6 +248,8 @@ class Parliament_PG {
 		$this->loader->add_action( 'rest_api_init', $plugin_api_provinces, 'register_route_provinces' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_images, 'register_route_images' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_videos, 'register_route_videos' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_questions, 'register_route_questions' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_sessions, 'register_route_sessions' );
 	}
 
 

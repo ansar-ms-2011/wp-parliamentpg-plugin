@@ -13,16 +13,14 @@
  */
 ?>
 
-<!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<div id="parliament-pg-root"
-    class="parliament-pg-root elementor-widget-container"
-    data-view="<?php if ( isset( $view ) ) {
-        echo $view;
-    } ?>" data-id="<?php if ( isset( $id ) ) {
-        echo $id;
-    } ?>" data-wpUrl="<?php if ( isset( $frontend_url ) ) {
-    echo $frontend_url;
-} ?>"
->
-    <!--    React-based HTML will go here-->
+<div class="parliament-pg-root"
+     data-view="<?php if ( isset( $view ) ) {
+         echo esc_attr($view);
+     } ?>"
+     data-id="<?php if ( isset( $id ) ) {
+         echo esc_attr($id);
+     } ?>"
+     data-wpurl="<?php if ( isset( $frontend_url ) ) {
+         echo esc_attr($frontend_url);
+     } ?>">
 </div>
