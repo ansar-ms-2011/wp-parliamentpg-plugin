@@ -158,6 +158,8 @@ class Parliament_PG {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/videos.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/questions.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/sessions.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/press-releases.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/api-routes/recommendations.php';
 
 		$this->loader = new Parliament_PG_Loader();
 
@@ -236,6 +238,8 @@ class Parliament_PG {
 		$plugin_api_hansards = new Parliament_PG_API_Hansards();
 		$plugin_api_meetings = new Parliament_PG_API_Meetings();
 		$plugin_api_notice_papers = new Parliament_PG_API_Notice_Papers();
+		$plugin_api_press_releases = new Parliament_PG_API_Press_Releases();
+		$plugin_api_recommendations = new Parliament_PG_API_Recommendations();
 
 		$this->loader->add_action( 'rest_api_init', $plugin_api_filters, 'register_route_filters' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_bills, 'register_route_bills' );
@@ -250,6 +254,8 @@ class Parliament_PG {
 		$this->loader->add_action( 'rest_api_init', $plugin_api_videos, 'register_route_videos' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_questions, 'register_route_questions' );
 		$this->loader->add_action( 'rest_api_init', $plugin_api_sessions, 'register_route_sessions' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_press_releases, 'register_route_press_releases' );
+		$this->loader->add_action( 'rest_api_init', $plugin_api_recommendations, 'register_route_recommendations' );
 	}
 
 
@@ -292,5 +298,4 @@ class Parliament_PG {
 	public function get_version() {
 		return $this->version;
 	}
-
 }

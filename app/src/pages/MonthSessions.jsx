@@ -105,13 +105,15 @@ const MonthSessions = ({ id, url, month }) => {
                                 data-date={format(day,"yyyy-MM-dd")}
                             >
 
-                            <span className="day-number">
-                              {format(day,"d")}
-                            </span>
+                                <span className="day-number">
+                                  {format(day,"d")}
+                                </span>
 
                                 {result.hasSession && (
                                     <div className="calendar-tooltip">
-                                        <strong>Parliament Sessions ({result.sessions.length})</strong>
+                                        <div className="tooltip-header-wrapper">
+                                            <strong>Parliament Sessions ({result.sessions.length})</strong>
+                                        </div>
                                         <ul>
                                             {result.sessions.map(session => (
                                                 <li key={session.id}>{session.name}</li>

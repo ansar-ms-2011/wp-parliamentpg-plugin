@@ -13,6 +13,8 @@ import Videos from "./pages/Videos";
 import Questions from "./pages/Questions";
 import MonthSessions from "./pages/MonthSessions";
 import FullYearSessions from "./pages/FullYearSessions";
+import PressReleases from "./pages/PressReleases";
+import Recommendations from "./pages/Recommendations";
 
 function App({ view, id, url }) {
   switch(view) {
@@ -42,6 +44,10 @@ function App({ view, id, url }) {
       return <MonthSessions id={id} url={url} type="month-sessions" />;
     case 'year-sessions':
       return <FullYearSessions id={id} url={url} type="year-sessions" />;
+    case 'press-releases':
+      return <PressReleases id={id} url={url} type="press-releases" />;
+    case 'recommendations':
+      return <Recommendations id={id} url={url} type="recommendations" />;
     default:
       return <DefaultView id={id}/>;
   }
