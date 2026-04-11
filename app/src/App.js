@@ -11,10 +11,10 @@ import Provinces from "./pages/Provinces";
 import Images from "./pages/Images";
 import Videos from "./pages/Videos";
 import Questions from "./pages/Questions";
-import MonthSessions from "./pages/MonthSessions";
-import FullYearSessions from "./pages/FullYearSessions";
+import EventsCalendar from "./pages/EventsCalendar";
 import PressReleases from "./pages/PressReleases";
 import Recommendations from "./pages/Recommendations";
+import Articles from "./pages/Articles";
 
 function App({ view, id, url }) {
   switch(view) {
@@ -40,14 +40,14 @@ function App({ view, id, url }) {
       return <Videos id={id} url={url} type="videos"/>;
     case 'questions':
       return <Questions id={id} url={url} type="questions"/>;
-    case 'month-sessions':
-      return <MonthSessions id={id} url={url} type="month-sessions" />;
-    case 'year-sessions':
-      return <FullYearSessions id={id} url={url} type="year-sessions" />;
+    case 'events':
+      return <EventsCalendar id={id} url={url} type="events" />;
     case 'press-releases':
       return <PressReleases id={id} url={url} type="press-releases" />;
     case 'recommendations':
       return <Recommendations id={id} url={url} type="recommendations" />;
+    case 'articles':
+      return <Articles id={id} url={url} type="articles" />;
     default:
       return <DefaultView id={id}/>;
   }

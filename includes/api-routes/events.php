@@ -1,9 +1,9 @@
 <?php
-class Parliament_PG_API_Sessions {
-	public function register_route_sessions() {
-		register_rest_route('parliament-pg/v1', '/get-sessions', array(
+class Parliament_PG_API_Events {
+	public function register_route_events() {
+		register_rest_route('parliament-pg/v1', '/get-events', array(
 			'methods'  => 'GET',
-			'callback' => array($this, 'get_sessions_data'),
+			'callback' => array($this, 'get_events_data'),
 			'permission_callback' => '__return_true',
 			'args' => array(
 				'aId' => array(
@@ -13,7 +13,7 @@ class Parliament_PG_API_Sessions {
 		));
 	}
 
-	public function get_sessions_data( WP_REST_Request $request ) {
+	public function get_events_data( WP_REST_Request $request ) {
 		$endpoints = get_option( 'parliament_pg_view_endpoints', [] );
 		$query = [];
 		// Optional filters
@@ -24,7 +24,7 @@ class Parliament_PG_API_Sessions {
 			}
 		}
 
-		$external_url = add_query_arg( $query, $endpoints['month-sessions']['backend']);
+		$external_url = add_query_arg( $query, $endpoints['events']['backend']);
 
 		$response = wp_remote_get($external_url);
 

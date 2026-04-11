@@ -1,0 +1,86 @@
+/* spacing between items */
+.gallery-item {
+    margin-bottom: 16px;
+}
+
+/* wrapper */
+.img-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* image */
+.img-wrapper img {
+    width: 100%;
+    display: block;
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* zoom + slight darkening */
+.img-wrapper:hover img {
+    transform: scale(1.08);
+    filter: brightness(0.8);
+}
+
+/* overlay */
+/*.overlay {*/
+/*    position: absolute;*/
+/*    inset: 0;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    opacity: 1;*/
+/*    transition: opacity 0.3s ease;*/
+/*}*/
+
+.overlay {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.3);
+    padding: 2px 4px;
+    border-radius: 5px;
+    color: white !important;
+}
+.overlay .text-wrapper p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+/* show overlay */
+.img-wrapper:hover .overlay {
+    opacity: 1;
+}
+
+/* optional: lift effect */
+.gallery-item {
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-6px);
+}
+
+.img-wrapper {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+. album-input{
+    border-radius: 5px !important;
+    padding: unset !important;
+}
